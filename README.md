@@ -8,9 +8,9 @@
 > - `Code of Conduct` - do not change this!
 > - `Licensing` - do not change this!
 
-# {Project Title}
+# ANS Manager
 <!--- mandatory --->
-> Modify the title and insert the name of your project. Use Heading 1 (H1).
+> Alert Notifications Service manager
 
 ## Overview
 <!--- mandatory section --->
