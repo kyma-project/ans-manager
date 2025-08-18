@@ -1,4 +1,4 @@
-package ans
+package ans_manager
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyma-project/ans-manager/internal/events"
+	"github.com/kyma-project/ans-manager/internal/notifications"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,32 +27,30 @@ func Test_PostEvent(t *testing.T) {
 	}
 	client := NewEventsClient(context.Background(), config, logger.With("component", "ANS-eventsClient"))
 	require.NotNil(t, client)
-	recipient, err := events.NewXsuaaRecipient(events.LevelSubaccount, "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad", []events.RoleName{"Subaccount admin"})
-	require.NoError(t, err)
-	recipients, err := events.NewRecipients([]events.XsuaaRecipient{*recipient}, nil)
-	require.NoError(t, err)
-	notificationMapping, err := events.NewNotificationMapping("POC_WebOnlyType2", *recipients)
-	require.NoError(t, err)
-	eventTime := int64(1)
-	resource, err := events.NewResource("broker",
+	recipient := events.NewXsuaaRecipient(events.LevelSubaccount, "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad", []events.RoleName{"Subaccount admin"})
+	require.NoError(t, recipient.Validate())
+	recipients := events.NewRecipients([]events.XsuaaRecipient{*recipient}, nil)
+	require.NoError(t, recipients.Validate())
+	notificationMapping := events.NewNotificationMapping("POC_WebOnlyType2", *recipients)
+	require.NoError(t, notificationMapping.Validate())
+	resource := events.NewResource("broker",
 		"keb",
 		"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
 		"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
 		events.WithResourceGlobalAccount("8cd57dc2-edb2-45e0-af8b-7d881006e516"))
-	require.NoError(t, err)
+	require.NoError(t, resource.Validate())
 	event, err := events.NewResourceEvent(
-		"POC-test-KEB-event",
-		"Test body",
-		"PoC for KEB",
-		*resource,
-		&eventTime,
+		"eventType",
+		"body",
+		"subject",
+		resource,
 		events.SeverityInfo,
 		events.CategoryNotification,
 		events.VisibilityOwnerSubAccount,
 		*notificationMapping,
 	)
 	require.NotNil(t, event)
-	require.NoError(t, err)
+	require.NoError(t, event.Validate())
 	eventAsJSON, err := json.Marshal(event)
 	require.JSONEq(t, "{\"body\":\"Test body\",\"subject\":\"PoC for KEB\",\"eventType\":\"POC-test-KEB-event\",\"resource\":{\"resourceType\":\"broker\",\"resourceName\":\"keb\",\"subAccount\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\"globalAccount\":\"8cd57dc2-edb2-45e0-af8b-7d881006e516\",\"resourceGroup\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\"},\"severity\":\"INFO\",\"category\":\"NOTIFICATION\",\"visibility\":\"OWNER_SUBACCOUNT\",\"notificationMapping\":{\"notificationTypeKey\":\"POC_WebOnlyType2\",\"recipients\":{\"xsuaa\":[{\"level\":\"SUBACCOUNT\",\"tenantId\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\"roleNames\":[\"Subaccount admin\"]}]}}}", string(eventAsJSON))
 	require.JSONEq(t, "{\n  \"eventType\": \"POC-test-KEB-event\",\n  \"body\": \"Test body\",\n  \"subject\": \"PoC for KEB\",\n  \"severity\": \"INFO\",\n  \"visibility\": \"OWNER_SUBACCOUNT\",\n  \"category\": \"NOTIFICATION\",\n  \"resource\": {\n    \"globalAccount\": \"8cd57dc2-edb2-45e0-af8b-7d881006e516\",\n    \"subAccount\": \"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\n    \"resourceGroup\": \"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\n    \"resourceType\": \"broker\",\n    \"resourceName\": \"keb\"\n  },\n  \"notificationMapping\": {\n    \"notificationTypeKey\": \"POC_WebOnlyType2\",\n    \"recipients\": {\n      \"xsuaa\":[\n\t{\n          \"tenantId\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\n          \"level\":\"SUBACCOUNT\",\n          \"roleNames\": [\"Subaccount admin\"]}\n      ]\n    }\n  }\n}", string(eventAsJSON))
@@ -70,16 +70,16 @@ func Test_PostNotifications(t *testing.T) {
 	}
 	client := NewNotificationsClient(context.Background(), config, logger.With("component", "ANS-notificationsClient"))
 	require.NotNil(t, client)
-	recipient, err := notifications.NewRecipient("jaroslaw.pieszka@sap.com", notifications.WithIasHost("accounts.sap.com"))
-	require.NoError(t, err)
+	recipient := notifications.NewRecipient("jaroslaw.pieszka@sap.com", "accounts.sap.com")
+	require.NoError(t, recipient.Validate())
 	require.NotNil(t, recipient)
-	property, err := notifications.NewProperty("shoot", "c0123456")
-	require.NoError(t, err)
+	property := notifications.NewProperty("shoot", "c0123456")
+	require.NoError(t, property.Validate())
 	require.NotNil(t, property)
-	notification, err := notifications.NewNotification("POC_WebOnlyType",
+	notification := notifications.NewNotification("POC_WebOnlyType",
 		[]notifications.Recipient{*recipient},
 		notifications.WithProperties([]notifications.Property{*property}))
-	require.NoError(t, err)
+	require.NoError(t, notification.Validate())
 	require.NotNil(t, notification)
 	notificationAsJSON, err := json.Marshal(notification)
 	require.JSONEq(t, "{\"NotificationTypeKey\":\"POC_WebOnlyType\",\"Recipients\":[{\"RecipientId\":\"jaroslaw.pieszka@sap.com\",\"IasHost\":\"accounts.sap.com\"}],\"Properties\":[{\"Key\":\"shoot\",\"Value\":\"c0123456\"}]}", string(notificationAsJSON))
