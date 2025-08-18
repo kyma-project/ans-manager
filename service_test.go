@@ -52,8 +52,60 @@ func Test_PostEvent(t *testing.T) {
 	require.NotNil(t, event)
 	require.NoError(t, event.Validate())
 	eventAsJSON, err := json.Marshal(event)
-	require.JSONEq(t, "{\"body\":\"Test body\",\"subject\":\"PoC for KEB\",\"eventType\":\"POC-test-KEB-event\",\"resource\":{\"resourceType\":\"broker\",\"resourceName\":\"keb\",\"subAccount\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\"globalAccount\":\"8cd57dc2-edb2-45e0-af8b-7d881006e516\",\"resourceGroup\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\"},\"severity\":\"INFO\",\"category\":\"NOTIFICATION\",\"visibility\":\"OWNER_SUBACCOUNT\",\"notificationMapping\":{\"notificationTypeKey\":\"POC_WebOnlyType2\",\"recipients\":{\"xsuaa\":[{\"level\":\"SUBACCOUNT\",\"tenantId\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\"roleNames\":[\"Subaccount admin\"]}]}}}", string(eventAsJSON))
-	require.JSONEq(t, "{\n  \"eventType\": \"POC-test-KEB-event\",\n  \"body\": \"Test body\",\n  \"subject\": \"PoC for KEB\",\n  \"severity\": \"INFO\",\n  \"visibility\": \"OWNER_SUBACCOUNT\",\n  \"category\": \"NOTIFICATION\",\n  \"resource\": {\n    \"globalAccount\": \"8cd57dc2-edb2-45e0-af8b-7d881006e516\",\n    \"subAccount\": \"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\n    \"resourceGroup\": \"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\n    \"resourceType\": \"broker\",\n    \"resourceName\": \"keb\"\n  },\n  \"notificationMapping\": {\n    \"notificationTypeKey\": \"POC_WebOnlyType2\",\n    \"recipients\": {\n      \"xsuaa\":[\n\t{\n          \"tenantId\":\"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad\",\n          \"level\":\"SUBACCOUNT\",\n          \"roleNames\": [\"Subaccount admin\"]}\n      ]\n    }\n  }\n}", string(eventAsJSON))
+	require.JSONEq(t, `{
+  "body": "Test body",
+  "subject": "PoC for KEB",
+  "eventType": "POC-test-KEB-event",
+  "resource": {
+    "resourceType": "broker",
+    "resourceName": "keb",
+    "subAccount": "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+    "globalAccount": "8cd57dc2-edb2-45e0-af8b-7d881006e516",
+    "resourceGroup": "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad"
+  },
+  "severity": "INFO",
+  "category": "NOTIFICATION",
+  "visibility": "OWNER_SUBACCOUNT",
+  "notificationMapping": {
+    "notificationTypeKey": "POC_WebOnlyType2",
+    "recipients": {
+      "xsuaa": [
+        {
+          "level": "SUBACCOUNT",
+          "tenantId": "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+          "roleNames": ["Subaccount admin"]
+        }
+      ]
+    }
+  }
+}`, string(eventAsJSON))
+	require.JSONEq(t, `{
+  "eventType": "POC-test-KEB-event",
+  "body": "Test body",
+  "subject": "PoC for KEB",
+  "severity": "INFO",
+  "visibility": "OWNER_SUBACCOUNT",
+  "category": "NOTIFICATION",
+  "resource": {
+    "globalAccount": "8cd57dc2-edb2-45e0-af8b-7d881006e516",
+    "subAccount": "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+    "resourceGroup": "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+    "resourceType": "broker",
+    "resourceName": "keb"
+  },
+  "notificationMapping": {
+    "notificationTypeKey": "POC_WebOnlyType2",
+    "recipients": {
+      "xsuaa": [
+        {
+          "tenantId": "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+          "level": "SUBACCOUNT",
+          "roleNames": ["Subaccount admin"]
+        }
+      ]
+    }
+  }
+}`, string(eventAsJSON))
 	err = client.postEvent(*event)
 	require.NoError(t, err)
 }
@@ -82,8 +134,36 @@ func Test_PostNotifications(t *testing.T) {
 	require.NoError(t, notification.Validate())
 	require.NotNil(t, notification)
 	notificationAsJSON, err := json.Marshal(notification)
-	require.JSONEq(t, "{\"NotificationTypeKey\":\"POC_WebOnlyType\",\"Recipients\":[{\"RecipientId\":\"jaroslaw.pieszka@sap.com\",\"IasHost\":\"accounts.sap.com\"}],\"Properties\":[{\"Key\":\"shoot\",\"Value\":\"c0123456\"}]}", string(notificationAsJSON))
-	require.JSONEq(t, "{\n  \"NotificationTypeKey\": \"POC_WebOnlyType\",\n  \"Recipients\": [\n    {\n      \"RecipientId\": \"jaroslaw.pieszka@sap.com\",\n      \"IasHost\": \"accounts.sap.com\"\n    }\n  ],\n  \"Properties\": [\n    {\n      \"Key\": \"shoot\",\n      \"Value\": \"c0123456\"\n    }\n  ]\n}", string(notificationAsJSON))
+	require.JSONEq(t, `{
+  "NotificationTypeKey": "POC_WebOnlyType",
+  "Recipients": [
+    {
+      "RecipientId": "jaroslaw.pieszka@sap.com",
+      "IasHost": "accounts.sap.com"
+    }
+  ],
+  "Properties": [
+    {
+      "Key": "shoot",
+      "Value": "c0123456"
+    }
+  ]
+}`, string(notificationAsJSON))
+	require.JSONEq(t, `{
+  "NotificationTypeKey": "POC_WebOnlyType",
+  "Recipients": [
+    {
+      "RecipientId": "jaroslaw.pieszka@sap.com",
+      "IasHost": "accounts.sap.com"
+    }
+  ],
+  "Properties": [
+    {
+      "Key": "shoot",
+      "Value": "c0123456"
+    }
+  ]
+}`, string(notificationAsJSON))
 	require.NoError(t, err)
 	err = client.postNotification(*notification)
 	require.NoError(t, err)
