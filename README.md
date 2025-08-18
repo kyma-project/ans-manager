@@ -1,16 +1,19 @@
 # ANS Manager
 <!--- mandatory --->
-> Alert Notifications Service manager
+Alert Notifications Service manager
 
 ## Overview
 <!--- mandatory section --->
 
-> Simple client using ANS services to post notifications and events created for sake of Proof of Concept, to explore possibilities of API, and get the knowledge of process required to acquire necessary 
-> resources, permissions.
+Simple client using ANS services to post notifications and events created for the sake of Proof of Concept, to explore possibilities of API, and get the knowledge of the process required to acquire the necessary 
+resources, permissions.
 
 ## Prerequisites
 
-> List the requirements to run the project or example.
+- Create Service Instance of ANS Manager with plan `xproduct-single-tenant`. For Staging and Canary Service Instance must be created in the subaccount region `cf-us10`. This Instance is needed to process notifications. 
+- Ask ANS team to assign storage passing them the Service Instance ID. The storage is required to store the notifications.
+- If you intend to use events create Service Instance of ANS Manager with plan `standard`. Then create ticket for ANS team to elevate this Instance. 
+ 
 
 ## Installation
 
