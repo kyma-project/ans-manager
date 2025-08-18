@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/ans-manager/internal/events"
-	"github.com/kyma-project/ans-manager/internal/notifications"
+	"github.com/kyma-project/ans-manager/events"
+	"github.com/kyma-project/ans-manager/notifications"
 	"github.com/stretchr/testify/require"
 )
 
