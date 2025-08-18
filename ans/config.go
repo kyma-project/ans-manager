@@ -1,4 +1,4 @@
-package ans_manager
+package ans
 
 import "time"
 
