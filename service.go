@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/kyma-project/ans-manager/internal/events"
-	"github.com/kyma-project/ans-manager/internal/notifications"
+	"github.com/kyma-project/ans-manager/events"
+	"github.com/kyma-project/ans-manager/notifications"
 )
 
 const (
