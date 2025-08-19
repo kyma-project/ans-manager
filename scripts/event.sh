@@ -30,4 +30,4 @@ curl -v  --request POST \
       ]
     }
   }
-}'|jq|tee -a event-log.log
+}'|jq

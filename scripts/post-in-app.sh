@@ -19,4 +19,4 @@ curl -v  --request POST \
       "Value": "c0123456"
     }
   ]
-}'
+}'|jq
