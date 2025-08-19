@@ -1,5 +1,5 @@
 token=$(cat ./current-e.token|xargs echo)
-curl -v  --request POST \
+curl --request POST \
   --url 'https://clm-sl-ans-canary-ans-service-api.cfapps.eu12.hana.ondemand.com/cf/producer/service/v1/resource-events' \
   --header 'Accept: application/json' \
   --header 'Content-type: application/json' \
@@ -30,4 +30,4 @@ curl -v  --request POST \
       ]
     }
   }
-}'|jq|tee -a event-log.log
+}'|jq
