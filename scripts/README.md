@@ -52,6 +52,11 @@ If you send an event with notifications, placeholders are replaced with the valu
 - `{subject}` is replaced with the subject of the event (`ResourceEvent.Subject`)
 - `{eventType}` is replaced with the event type of the event (`ResourceEvent.EventType`)
 
+### Patch a notification type
+Run the script `patch-in-app.sh` to patch the template of notification type identified by given ID.
+
+### Delete a notification type
+Run the script `del-type.sh` to delete a notification type by its ID.
 
 
 ### Get all notification types
