@@ -29,27 +29,24 @@ func Test_PostEvent(t *testing.T) {
 	}
 	client := NewEventsClient(context.Background(), config, logger.With("component", "ANS-eventsClient"))
 	require.NotNil(t, client)
-	recipient := events.NewXsuaaRecipient(events.LevelSubaccount, "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad", []events.RoleName{"Subaccount admin"})
-	require.NoError(t, recipient.Validate())
-	recipients := events.NewRecipients([]events.XsuaaRecipient{*recipient}, nil)
-	require.NoError(t, recipients.Validate())
-	notificationMapping := events.NewNotificationMapping("POC_WebOnlyType2", *recipients)
-	require.NoError(t, notificationMapping.Validate())
-	resource := events.NewResource("broker",
-		"keb",
-		"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
-		"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
-		events.WithResourceGlobalAccount("8cd57dc2-edb2-45e0-af8b-7d881006e516"))
-	require.NoError(t, resource.Validate())
 	event, err := events.NewResourceEvent(
 		"eventType",
 		"body",
 		"subject",
-		resource,
+		events.NewResource("broker",
+			"keb",
+			"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+			"2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+			events.WithResourceGlobalAccount("8cd57dc2-edb2-45e0-af8b-7d881006e516")),
 		events.SeverityInfo,
 		events.CategoryNotification,
 		events.VisibilityOwnerSubAccount,
-		*notificationMapping,
+		*events.NewNotificationMapping("POC_WebOnlyType2",
+			*events.NewRecipients(
+				[]events.XsuaaRecipient{*events.NewXsuaaRecipient(
+					events.LevelSubaccount, "2fd47ed4-dd54-40b5-99d8-36c4dc3b8cad",
+					[]events.RoleName{"Subaccount admin"})},
+				nil)),
 	)
 	require.NotNil(t, event)
 	require.NoError(t, event.Validate())
@@ -97,15 +94,9 @@ func Test_PostNotifications(t *testing.T) {
 	}
 	client := NewNotificationsClient(context.Background(), config, logger.With("component", "ANS-notificationsClient"))
 	require.NotNil(t, client)
-	recipient := notifications.NewRecipient("jaroslaw.pieszka@sap.com", "accounts.sap.com")
-	require.NoError(t, recipient.Validate())
-	require.NotNil(t, recipient)
-	property := notifications.NewProperty("shoot", "c0123456")
-	require.NoError(t, property.Validate())
-	require.NotNil(t, property)
 	notification := notifications.NewNotification("POC_WebOnlyType",
-		[]notifications.Recipient{*recipient},
-		notifications.WithProperties([]notifications.Property{*property}))
+		[]notifications.Recipient{*notifications.NewRecipient("jaroslaw.pieszka@sap.com", "accounts.sap.com")},
+		notifications.WithProperties([]notifications.Property{*notifications.NewProperty("shoot", "c0123456")}))
 	require.NoError(t, notification.Validate())
 	require.NotNil(t, notification)
 	notificationAsJSON, err := json.Marshal(notification)
