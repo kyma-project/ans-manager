@@ -54,6 +54,10 @@ There are two end-to-end tests in the `service-test.go` file that demonstrate ho
 The tests do not use the service itself, but rather the clients directly. To run tests, you need to set the environment variables for the Service Binding credentials,
 and you need to comment out the `t.Skip()` lines in the tests. The tests will post a notification and an event using the clients, and they will check if the notification and event are delivered correctly.
 
+## Shell scripts
+The `ans-manager` module also contains shell scripts that can be used to post notifications, events, and to manage notification types, [see](./scripts/README.md) for details.
+
+
 ## Development
 
 > Add instructions on how to develop the project or example. It must be clear what to do and, for example, how to trigger the tests so that other contributors know how to make their pull requests acceptable. Include the instructions or provide links to related documentation.
