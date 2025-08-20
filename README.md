@@ -12,7 +12,7 @@ resources, permissions.
 
 - Create Service Instance of ANS Manager with plan `xproduct-single-tenant`. For Staging and Canary Service Instance must be created in the subaccount region `cf-us10`. This Instance is needed to process notifications. 
 - Ask ANS team to assign storage passing them the Service Instance ID. The storage is required to store the notifications.
-- If you intend to use events create Service Instance of ANS Manager with plan `standard`. Then create a ticket for ANS team to elevate this Instance (see [this](https://jira.tools.sap/browse/HCPSR-52322)). 
+- If you intend to use events create Service Instance of ANS Manager with plan `standard`. Then create a ticket for ANS team to elevate this Instance. 
 - Update the `standard` Service Instance with the `xproduct-single-tenant` instance ID.
 ```json
 {
