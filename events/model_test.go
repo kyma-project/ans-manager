@@ -199,7 +199,7 @@ func Test_NewResourceEvent(t *testing.T) {
 		resource,
 		SeverityInfo,
 		CategoryNotification,
-		VisibilityOwnerSubAccount,
+		VisibilityOwnerSubaccount,
 		*notificationMapping,
 	)
 	require.NoError(t, err)
@@ -295,7 +295,7 @@ func Test_NewResourceEventWithAllOptions(t *testing.T) {
 		resource,
 		SeverityInfo,
 		CategoryNotification,
-		VisibilityOwnerSubAccount,
+		VisibilityOwnerSubaccount,
 		*notificationMapping,
 		WithID("eventID"),
 		WithBody("body"),
@@ -303,12 +303,12 @@ func Test_NewResourceEventWithAllOptions(t *testing.T) {
 		WithResource(resource),
 		WithSeverity(SeverityInfo),
 		WithCategory(CategoryNotification),
-		WithVisibility(VisibilityOwnerSubAccount),
+		WithVisibility(VisibilityOwnerSubaccount),
 		WithEventType("eventType"),
 		WithPriority(1),
 		WithRegion("cf-eu12"),
 		WithRegionType("cf-eu12"),
-		WithEventTimeStamp(1735689600),
+		WithEventTimestamp(1735689600),
 	)
 	require.NoError(t, err)
 	resourceEventJSON, err := json.Marshal(resourceEvent)
