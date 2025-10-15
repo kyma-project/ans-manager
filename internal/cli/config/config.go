@@ -60,26 +60,39 @@ func (p *ProviderFromJSON) getOAuthConfigFromJSON(region string) (*OAuth, error)
 }
 
 func decodeRegionCredentials(file *os.File, region string) (*OAuth, error) {
-	decoder := json.NewDecoder(file)
 	var regionCredentials OAuth
-	t, err := decoder.Token()
-	if err != nil || t != json.Delim('{') {
+	dec := json.NewDecoder(file)
+	t, err := dec.Token()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read JSON: %w", err)
+	}
+	if delim, ok := t.(json.Delim); !ok || delim != '{' {
 		return nil, fmt.Errorf("expected start of a JSON object ('{' delimiter)")
 	}
 
-	for decoder.More() {
-		var key string
-		if err := decoder.Decode(&key); err != nil {
-			return nil, err
+	for dec.More() {
+		keyToken, err := dec.Token()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read key: %w", err)
+		}
+		key, ok := keyToken.(string)
+		if !ok {
+			return nil, fmt.Errorf("expected string key, got %T", keyToken)
 		}
 		if key == region {
-			if err := decoder.Decode(&regionCredentials); err != nil {
-				return nil, err
+			if err := dec.Decode(&regionCredentials); err != nil {
+				return nil, fmt.Errorf("failed to decode OAuth credentials: %w", err)
 			}
-			break
+			return &regionCredentials, nil
+		} else {
+			var skip json.RawMessage
+			if err := dec.Decode(&skip); err != nil {
+				return nil, fmt.Errorf("failed to skip value: %w", err)
+			}
 		}
 	}
-	return &regionCredentials, nil
+
+	return nil, fmt.Errorf("region %s not found in credentials file", region)
 }
 
 func validateRegionCredentials(regionCredentials *OAuth) error {
