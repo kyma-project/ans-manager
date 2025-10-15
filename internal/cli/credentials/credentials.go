@@ -1,4 +1,4 @@
-package config
+package credentials
 
 import (
 	"encoding/json"
@@ -9,10 +9,10 @@ import (
 )
 
 type Provider interface {
-	ProvideForRegion(region string) (*OAuth, error)
+	ProvideForRegion(region string) (*OAuthCredentials, error)
 }
 
-type OAuth struct {
+type OAuthCredentials struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 	TokenURL     string `json:"token_url"`
@@ -36,11 +36,11 @@ func NewProviderFromJSON(jsonFilePath string) (Provider, error) {
 	}, nil
 }
 
-func (p *ProviderFromJSON) ProvideForRegion(region string) (*OAuth, error) {
-	return p.getOAuthConfigFromJSON(region)
+func (p *ProviderFromJSON) ProvideForRegion(region string) (*OAuthCredentials, error) {
+	return p.getOAuthCredsFromJSON(region)
 }
 
-func (p *ProviderFromJSON) getOAuthConfigFromJSON(region string) (*OAuth, error) {
+func (p *ProviderFromJSON) getOAuthCredsFromJSON(region string) (*OAuthCredentials, error) {
 	file, err := os.Open(p.JSONFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open credentials file %s: %w", p.JSONFilePath, err)
@@ -59,8 +59,8 @@ func (p *ProviderFromJSON) getOAuthConfigFromJSON(region string) (*OAuth, error)
 	return regionCredentials, nil
 }
 
-func decodeRegionCredentials(file *os.File, region string) (*OAuth, error) {
-	var regionCredentials OAuth
+func decodeRegionCredentials(file *os.File, region string) (*OAuthCredentials, error) {
+	var regionCredentials OAuthCredentials
 	dec := json.NewDecoder(file)
 	t, err := dec.Token()
 	if err != nil {
@@ -95,7 +95,7 @@ func decodeRegionCredentials(file *os.File, region string) (*OAuth, error) {
 	return nil, fmt.Errorf("region %s not found in credentials file", region)
 }
 
-func validateRegionCredentials(regionCredentials *OAuth) error {
+func validateRegionCredentials(regionCredentials *OAuthCredentials) error {
 	var errs []error
 	if regionCredentials.ClientID == "" {
 		errs = append(errs, fmt.Errorf("client_id is empty"))
