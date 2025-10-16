@@ -40,10 +40,21 @@ func NewEventsClient(region string, credentialsProvider credentials.Provider) (*
 	}, nil
 }
 
-func (c *EventsClient) SendEvent(event *events.ResourceEvent) error {
+func (c *EventsClient) SendEvent(event *events.ResourceEvent, debug bool) error {
 	eventJSON, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("failed to marshal event: %w", err)
+	}
+
+	if debug {
+		fmt.Println("DEBUG: Request payload:")
+		var prettyJSON bytes.Buffer
+		if err := json.Indent(&prettyJSON, eventJSON, "", "  "); err != nil {
+			fmt.Printf("Raw JSON: %s\n", string(eventJSON))
+		} else {
+			fmt.Printf("%s\n", prettyJSON.String())
+		}
+		fmt.Println()
 	}
 
 	url := fmt.Sprintf("%s%s", c.serviceURL, eventsEndpoint)

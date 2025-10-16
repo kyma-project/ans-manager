@@ -49,7 +49,8 @@ The command uses OAuth authentication for the specified region.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			recipientType := args[0]
 			recipients := args[1:]
-			return runNotifyCommand(recipientType, recipients)
+			debug, _ := cmd.Root().PersistentFlags().GetBool("debug")
+			return runNotifyCommand(recipientType, recipients, debug)
 		},
 	}
 
@@ -67,7 +68,7 @@ The command uses OAuth authentication for the specified region.`,
 	return notifyCmd
 }
 
-func runNotifyCommand(recipientType string, recipients []string) error {
+func runNotifyCommand(recipientType string, recipients []string, debug bool) error {
 	if err := validateRecipientType(recipientType); err != nil {
 		return err
 	}
@@ -139,7 +140,7 @@ func runNotifyCommand(recipientType string, recipients []string) error {
 		return fmt.Errorf("failed to create resource event: %w", err)
 	}
 
-	if err := eventsClient.SendEvent(resourceEvent); err != nil {
+	if err := eventsClient.SendEvent(resourceEvent, debug); err != nil {
 		return fmt.Errorf("failed to send event: %w", err)
 	}
 
