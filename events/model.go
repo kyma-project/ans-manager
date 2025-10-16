@@ -29,8 +29,8 @@ type (
 	Resource struct {
 		Type          string            `json:"resourceType"`
 		Name          string            `json:"resourceName"`
-		ResourceGroup string            `json:"resourceGroup"`
-		Subaccount    string            `json:"subAccount"`
+		ResourceGroup string            `json:"resourceGroup,omitempty"`
+		Subaccount    string            `json:"subAccount,omitempty"`
 		GlobalAccount string            `json:"globalAccount,omitempty"`
 		Instance      string            `json:"resourceInstance,omitempty"`
 		Tags          map[string]string `json:"tags,omitempty"`
@@ -77,20 +77,22 @@ type (
 )
 
 const (
-	SeverityInfo                 Severity   = "INFO"
-	SeverityNotice               Severity   = "NOTICE"
-	SeverityWarning              Severity   = "WARNING"
-	SeverityError                Severity   = "ERROR"
-	SeverityFatal                Severity   = "FATAL"
-	CategoryException            Category   = "EXCEPTION"
-	CategoryNotification         Category   = "NOTIFICATION"
-	CategoryAlert                Category   = "ALERT"
-	VisibilitySource             Visibility = "SOURCE"
-	VisibilityOwner              Visibility = "OWNER"
-	VisibilityOwnerSubaccount    Visibility = "OWNER_SUBACCOUNT"
-	VisibilityOwnerGlobalAccount Visibility = "OWNER_GLOBAL_ACCOUNT"
-	LevelGlobalAccount           Level      = "GLOBAL_ACCOUNT"
-	LevelSubaccount              Level      = "SUBACCOUNT"
+	SeverityInfo                   Severity   = "INFO"
+	SeverityNotice                 Severity   = "NOTICE"
+	SeverityWarning                Severity   = "WARNING"
+	SeverityError                  Severity   = "ERROR"
+	SeverityFatal                  Severity   = "FATAL"
+	CategoryException              Category   = "EXCEPTION"
+	CategoryNotification           Category   = "NOTIFICATION"
+	CategoryAlert                  Category   = "ALERT"
+	VisibilitySource               Visibility = "SOURCE"
+	VisibilityOwner                Visibility = "OWNER"
+	VisibilityOwnerSubaccount      Visibility = "OWNER_SUBACCOUNT"
+	VisibilityOwnerGlobalAccount   Visibility = "OWNER_GLOBAL_ACCOUNT"
+	LevelGlobalAccount             Level      = "GLOBAL_ACCOUNT"
+	LevelSubaccount                Level      = "SUBACCOUNT"
+	RoleSubaccountAdministrator    RoleName   = "Subaccount Administrator"
+	RoleGlobalAccountAdministrator RoleName   = "Global Account Administrator"
 )
 
 func (c Category) Validate() error {
