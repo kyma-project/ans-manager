@@ -49,11 +49,16 @@ func TestProviderFromJSON_ProvideForRegion(t *testing.T) {
 			t.Fatalf("expected no error, got %v", err)
 		}
 
-		expected := &OAuthCredentials{
-			ClientID:     "your-client-id-eu10",
-			ClientSecret: "your-client-secret-eu10",
-			TokenURL:     "https://oauth.cf-eu10-canary.test.com/oauth/token",
-			ServiceURL:   "https://notifications.cf-eu10-canary.test.com/api/v1",
+		expected := &Region{
+			Service: Service{
+				ServiceURL:   "https://notifications.cf-eu10-canary.test.com/api/v1",
+				SubaccountID: "your-subaccount-id-eu10",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientID:     "your-client-id-eu10",
+				ClientSecret: "your-client-secret-eu10",
+				TokenURL:     "https://oauth.cf-eu10-canary.test.com/oauth/token",
+			},
 		}
 
 		if *oauth != *expected {
@@ -72,11 +77,16 @@ func TestProviderFromJSON_ProvideForRegion(t *testing.T) {
 			t.Fatalf("expected no error, got %v", err)
 		}
 
-		expected := &OAuthCredentials{
-			ClientID:     "your-client-id-us31",
-			ClientSecret: "your-client-secret-us31",
-			TokenURL:     "https://oauth.cf-us31.test.com/oauth/token",
-			ServiceURL:   "https://notifications.cf-us31.test.com/api/v1",
+		expected := &Region{
+			Service: Service{
+				ServiceURL:   "https://notifications.cf-us31.test.com/api/v1",
+				SubaccountID: "your-subaccount-id-us31",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientID:     "your-client-id-us31",
+				ClientSecret: "your-client-secret-us31",
+				TokenURL:     "https://oauth.cf-us31.test.com/oauth/token",
+			},
 		}
 
 		if *oauth != *expected {
@@ -151,11 +161,16 @@ func TestProviderFromJSON_ProvideForRegion(t *testing.T) {
 
 func TestValidateRegionCredentials(t *testing.T) {
 	t.Run("valid credentials", func(t *testing.T) {
-		oauth := &OAuthCredentials{
-			ClientID:     "test-id",
-			ClientSecret: "test-secret",
-			TokenURL:     "https://oauth.example.com/token",
-			ServiceURL:   "https://api.example.com",
+		oauth := &Region{
+			Service: Service{
+				ServiceURL:   "https://api.example.com",
+				SubaccountID: "test-subaccount-id",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientID:     "test-id",
+				ClientSecret: "test-secret",
+				TokenURL:     "https://oauth.example.com/token",
+			},
 		}
 
 		err := validateRegionCredentials(oauth)
@@ -165,10 +180,15 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing client_id", func(t *testing.T) {
-		oauth := &OAuthCredentials{
-			ClientSecret: "test-secret",
-			TokenURL:     "https://oauth.example.com/token",
-			ServiceURL:   "https://api.example.com",
+		oauth := &Region{
+			Service: Service{
+				ServiceURL:   "https://api.example.com",
+				SubaccountID: "test-subaccount-id",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientSecret: "test-secret",
+				TokenURL:     "https://oauth.example.com/token",
+			},
 		}
 
 		err := validateRegionCredentials(oauth)
@@ -178,10 +198,15 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing client_secret", func(t *testing.T) {
-		oauth := &OAuthCredentials{
-			ClientID:   "test-id",
-			TokenURL:   "https://oauth.example.com/token",
-			ServiceURL: "https://api.example.com",
+		oauth := &Region{
+			Service: Service{
+				ServiceURL:   "https://api.example.com",
+				SubaccountID: "test-subaccount-id",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientID: "test-id",
+				TokenURL: "https://oauth.example.com/token",
+			},
 		}
 
 		err := validateRegionCredentials(oauth)
@@ -191,10 +216,15 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing token_url", func(t *testing.T) {
-		oauth := &OAuthCredentials{
-			ClientID:     "test-id",
-			ClientSecret: "test-secret",
-			ServiceURL:   "https://api.example.com",
+		oauth := &Region{
+			Service: Service{
+				ServiceURL:   "https://api.example.com",
+				SubaccountID: "test-subaccount-id",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientID:     "test-id",
+				ClientSecret: "test-secret",
+			},
 		}
 
 		err := validateRegionCredentials(oauth)
@@ -204,10 +234,15 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing service_url", func(t *testing.T) {
-		oauth := &OAuthCredentials{
-			ClientID:     "test-id",
-			ClientSecret: "test-secret",
-			TokenURL:     "https://oauth.example.com/token",
+		oauth := &Region{
+			Service: Service{
+				SubaccountID: "test-subaccount-id",
+			},
+			OAuthCredentials: OAuthCredentials{
+				ClientID:     "test-id",
+				ClientSecret: "test-secret",
+				TokenURL:     "https://oauth.example.com/token",
+			},
 		}
 
 		err := validateRegionCredentials(oauth)
@@ -217,8 +252,10 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("multiple missing fields", func(t *testing.T) {
-		oauth := &OAuthCredentials{
-			ClientID: "test-id",
+		oauth := &Region{
+			OAuthCredentials: OAuthCredentials{
+				ClientID: "test-id",
+			},
 		}
 
 		err := validateRegionCredentials(oauth)
@@ -268,7 +305,6 @@ func TestDecodeRegionCredentials(t *testing.T) {
 	})
 }
 
-// Helper function to create temporary test files
 func createTempFile(t *testing.T, content string) string {
 	tmpFile, err := os.CreateTemp("", "test-credentials-*.json")
 	if err != nil {
