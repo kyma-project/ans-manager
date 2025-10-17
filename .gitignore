@@ -1,3 +1,15 @@
+# directories
+.idea
+bin
+
+# files
 *.json
 *.token
 
+# allow JSON files inside any "testdata" directory
+!**/testdata/*.json
+!**/testdata/**/*.json
+
+# allow JSON files inside any "example" directory
+!**/example/*.json
+!**/example/**/*.json

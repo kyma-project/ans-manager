@@ -40,7 +40,7 @@ func Test_PostEvent(t *testing.T) {
 			events.WithResourceGlobalAccount("8cd57dc2-edb2-45e0-af8b-7d881006e516")),
 		events.SeverityInfo,
 		events.CategoryNotification,
-		events.VisibilityOwnerSubAccount,
+		events.VisibilityOwnerSubaccount,
 		*events.NewNotificationMapping("POC_WebOnlyType2",
 			*events.NewRecipients(
 				[]events.XsuaaRecipient{*events.NewXsuaaRecipient(

@@ -7,20 +7,20 @@ import (
 type (
 	ResourceEvent struct {
 		ID                  string              `json:"id,omitempty"`
-		Body                string              `json:"body"`
-		Subject             string              `json:"subject"`
 		EventType           string              `json:"eventType"`
-		Priority            int64               `json:"priority,omitempty"`
-		Resource            Resource            `json:"resource,omitempty"`
-		EventTimeStamp      *int64              `json:"eventTimeStamp,omitempty"`
+		Subject             string              `json:"subject"`
+		Body                string              `json:"body"`
+		Category            Category            `json:"category"`
+		Severity            Severity            `json:"severity"`
+		Visibility          Visibility          `json:"visibility"`
+		Resource            Resource            `json:"resource"`
+		Priority            uint16              `json:"priority,omitempty"`
+		EventTimestamp      uint64              `json:"eventTimestamp,omitempty"`
 		Region              string              `json:"region,omitempty"`
 		RegionType          string              `json:"regionType,omitempty"`
-		Severity            Severity            `json:"severity"`
-		Category            Category            `json:"category"`
-		Visibility          Visibility          `json:"visibility"`
-		NotificationMapping NotificationMapping `json:"notificationMapping,omitempty"`
 		Source              string              `json:"source,omitempty"`
 		SourceType          string              `json:"sourceType,omitempty"`
+		NotificationMapping NotificationMapping `json:"notificationMapping,omitempty"`
 		Tags                map[string]string   `json:"tags,omitempty"`
 	}
 
@@ -29,10 +29,10 @@ type (
 	Resource struct {
 		Type          string            `json:"resourceType"`
 		Name          string            `json:"resourceName"`
-		Instance      string            `json:"resourceInstance,omitempty"`
-		Subaccount    string            `json:"subAccount"`
+		ResourceGroup string            `json:"resourceGroup,omitempty"`
+		Subaccount    string            `json:"subAccount,omitempty"`
 		GlobalAccount string            `json:"globalAccount,omitempty"`
-		ResourceGroup string            `json:"resourceGroup"`
+		Instance      string            `json:"resourceInstance,omitempty"`
 		Tags          map[string]string `json:"tags,omitempty"`
 	}
 
@@ -77,21 +77,22 @@ type (
 )
 
 const (
-	SeverityInfo         Severity   = "INFO"
-	SeverityNotice       Severity   = "NOTICE"
-	SeverityWarning      Severity   = "WARNING"
-	SeverityError        Severity   = "ERROR"
-	SeverityFatal        Severity   = "FATAL"
-	CategoryException    Category   = "EXCEPTION"
-	CategoryNotification Category   = "NOTIFICATION"
-	CategoryAlert        Category   = "ALERT"
-	VisibilitySource     Visibility = "SOURCE"
-	//VisibilityInternal        Visibility = "INTERNAL" // failed during manual testing, not supported by the service
-	VisibilityOwner           Visibility = "OWNER"
-	VisibilityOwnerSubAccount Visibility = "OWNER_SUBACCOUNT"
-	VisibilityGlobalAccount   Visibility = "GLOBAL_ACCOUNT"
-	LevelGlobalAccount        Level      = "GLOBAL_ACCOUNT"
-	LevelSubaccount           Level      = "SUBACCOUNT"
+	SeverityInfo                   Severity   = "INFO"
+	SeverityNotice                 Severity   = "NOTICE"
+	SeverityWarning                Severity   = "WARNING"
+	SeverityError                  Severity   = "ERROR"
+	SeverityFatal                  Severity   = "FATAL"
+	CategoryException              Category   = "EXCEPTION"
+	CategoryNotification           Category   = "NOTIFICATION"
+	CategoryAlert                  Category   = "ALERT"
+	VisibilitySource               Visibility = "SOURCE"
+	VisibilityOwner                Visibility = "OWNER"
+	VisibilityOwnerSubaccount      Visibility = "OWNER_SUBACCOUNT"
+	VisibilityOwnerGlobalAccount   Visibility = "OWNER_GLOBAL_ACCOUNT"
+	LevelGlobalAccount             Level      = "GLOBAL_ACCOUNT"
+	LevelSubaccount                Level      = "SUBACCOUNT"
+	RoleSubaccountAdministrator    RoleName   = "Subaccount Administrator"
+	RoleGlobalAccountAdministrator RoleName   = "Global Account Administrator"
 )
 
 func (c Category) Validate() error {
@@ -105,7 +106,7 @@ func (c Category) Validate() error {
 
 func (v Visibility) Validate() error {
 	switch v {
-	case VisibilitySource, VisibilityOwner, VisibilityOwnerSubAccount, VisibilityGlobalAccount:
+	case VisibilitySource, VisibilityOwner, VisibilityOwnerSubaccount, VisibilityOwnerGlobalAccount:
 		return nil
 	default:
 		return fmt.Errorf("invalid visibility: %s", v)
@@ -193,7 +194,7 @@ func WithEventType(eventType string) ResourceEventOption {
 		r.EventType = eventType
 	}
 }
-func WithPriority(priority int64) ResourceEventOption {
+func WithPriority(priority uint16) ResourceEventOption {
 	return func(r *ResourceEvent) {
 		r.Priority = priority
 	}
@@ -221,9 +222,9 @@ func (r Resource) Validate() error {
 	return nil
 }
 
-func WithEventTimeStamp(eventTimeStamp int64) ResourceEventOption {
+func WithEventTimestamp(eventTimestamp uint64) ResourceEventOption {
 	return func(r *ResourceEvent) {
-		r.EventTimeStamp = &eventTimeStamp
+		r.EventTimestamp = eventTimestamp
 	}
 }
 
@@ -301,8 +302,8 @@ func (r *ResourceEvent) Validate() error {
 	if r.Body == "" {
 		return fmt.Errorf("body is empty")
 	}
-	if r.EventTimeStamp != nil && *r.EventTimeStamp <= 0 {
-		return fmt.Errorf("event timestamp is invalid: %d", r.EventTimeStamp)
+	if r.EventTimestamp != 0 && r.EventTimestamp <= 0 {
+		return fmt.Errorf("event timestamp is invalid: %d", r.EventTimestamp)
 	}
 	if r.NotificationMapping.Validate() != nil {
 		return fmt.Errorf("invalid notification mapping: %w", r.NotificationMapping.Validate())
