@@ -87,7 +87,7 @@ func runNotifyCommand(recipientType string, recipients []string, debug bool) err
 		return fmt.Errorf("failed to create events client: %w", err)
 	}
 
-	resource := events.NewResource(resourceType, resourceName, "723847fc-ece1-485b-92e7-45a386042c60", "723847fc-ece1-485b-92e7-45a386042c60")
+	resource := events.NewResource(resourceType, resourceName, eventsClient.GetSubaccountID(), eventsClient.GetSubaccountID())
 
 	var eventType string
 	var visibility events.Visibility
