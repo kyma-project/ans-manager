@@ -15,8 +15,9 @@ import (
 const eventsEndpoint = "/cf/producer/service/v1/resource-events"
 
 type EventsClient struct {
-	httpClient *http.Client
-	serviceURL string
+	httpClient   *http.Client
+	serviceURL   string
+	subaccountID string
 }
 
 func NewEventsClient(region string, credentialsProvider credentials.Provider) (*EventsClient, error) {
@@ -35,9 +36,14 @@ func NewEventsClient(region string, credentialsProvider credentials.Provider) (*
 	httpClient := oauthCfg.Client(ctx)
 
 	return &EventsClient{
-		httpClient: httpClient,
-		serviceURL: creds.ServiceURL,
+		httpClient:   httpClient,
+		serviceURL:   creds.ServiceURL,
+		subaccountID: creds.SubaccountID,
 	}, nil
+}
+
+func (c *EventsClient) GetSubaccountID() string {
+	return c.subaccountID
 }
 
 func (c *EventsClient) SendEvent(event *events.ResourceEvent, debug bool) error {
