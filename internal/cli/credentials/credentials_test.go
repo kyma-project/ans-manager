@@ -49,8 +49,8 @@ func TestProviderFromJSON_ProvideForRegion(t *testing.T) {
 			t.Fatalf("expected no error, got %v", err)
 		}
 
-		expected := &Region{
-			Service: Service{
+		expected := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				ServiceURL:   "https://notifications.cf-eu10-canary.test.com/api/v1",
 				SubaccountID: "your-subaccount-id-eu10",
 			},
@@ -77,8 +77,8 @@ func TestProviderFromJSON_ProvideForRegion(t *testing.T) {
 			t.Fatalf("expected no error, got %v", err)
 		}
 
-		expected := &Region{
-			Service: Service{
+		expected := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				ServiceURL:   "https://notifications.cf-us31.test.com/api/v1",
 				SubaccountID: "your-subaccount-id-us31",
 			},
@@ -161,8 +161,8 @@ func TestProviderFromJSON_ProvideForRegion(t *testing.T) {
 
 func TestValidateRegionCredentials(t *testing.T) {
 	t.Run("valid credentials", func(t *testing.T) {
-		oauth := &Region{
-			Service: Service{
+		oauth := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				ServiceURL:   "https://api.example.com",
 				SubaccountID: "test-subaccount-id",
 			},
@@ -180,8 +180,8 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing client_id", func(t *testing.T) {
-		oauth := &Region{
-			Service: Service{
+		oauth := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				ServiceURL:   "https://api.example.com",
 				SubaccountID: "test-subaccount-id",
 			},
@@ -198,8 +198,8 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing client_secret", func(t *testing.T) {
-		oauth := &Region{
-			Service: Service{
+		oauth := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				ServiceURL:   "https://api.example.com",
 				SubaccountID: "test-subaccount-id",
 			},
@@ -216,8 +216,8 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing token_url", func(t *testing.T) {
-		oauth := &Region{
-			Service: Service{
+		oauth := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				ServiceURL:   "https://api.example.com",
 				SubaccountID: "test-subaccount-id",
 			},
@@ -234,8 +234,8 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("missing service_url", func(t *testing.T) {
-		oauth := &Region{
-			Service: Service{
+		oauth := &RegionAccess{
+			ServiceEndpoint: ServiceEndpoint{
 				SubaccountID: "test-subaccount-id",
 			},
 			OAuthCredentials: OAuthCredentials{
@@ -252,7 +252,7 @@ func TestValidateRegionCredentials(t *testing.T) {
 	})
 
 	t.Run("multiple missing fields", func(t *testing.T) {
-		oauth := &Region{
+		oauth := &RegionAccess{
 			OAuthCredentials: OAuthCredentials{
 				ClientID: "test-id",
 			},

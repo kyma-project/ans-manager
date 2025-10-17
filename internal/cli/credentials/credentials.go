@@ -9,15 +9,15 @@ import (
 )
 
 type Provider interface {
-	ProvideForRegion(region string) (*Region, error)
+	ProvideForRegion(region string) (*RegionAccess, error)
 }
 
-type Region struct {
-	Service
+type RegionAccess struct {
+	ServiceEndpoint
 	OAuthCredentials
 }
 
-type Service struct {
+type ServiceEndpoint struct {
 	ServiceURL   string `json:"service_url"`
 	SubaccountID string `json:"subaccount_id"`
 }
@@ -45,11 +45,11 @@ func NewProviderFromJSON(jsonFilePath string) (Provider, error) {
 	}, nil
 }
 
-func (p *ProviderFromJSON) ProvideForRegion(region string) (*Region, error) {
+func (p *ProviderFromJSON) ProvideForRegion(region string) (*RegionAccess, error) {
 	return p.getRegionCredsFromJSON(region)
 }
 
-func (p *ProviderFromJSON) getRegionCredsFromJSON(region string) (*Region, error) {
+func (p *ProviderFromJSON) getRegionCredsFromJSON(region string) (*RegionAccess, error) {
 	file, err := os.Open(p.JSONFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open credentials file %s: %w", p.JSONFilePath, err)
@@ -68,8 +68,8 @@ func (p *ProviderFromJSON) getRegionCredsFromJSON(region string) (*Region, error
 	return regionCredentials, nil
 }
 
-func decodeRegionCredentials(file *os.File, region string) (*Region, error) {
-	var regionCredentials Region
+func decodeRegionCredentials(file *os.File, region string) (*RegionAccess, error) {
+	var regionCredentials RegionAccess
 	dec := json.NewDecoder(file)
 	t, err := dec.Token()
 	if err != nil {
@@ -105,7 +105,7 @@ func decodeRegionCredentials(file *os.File, region string) (*Region, error) {
 	return nil, fmt.Errorf("region %s not found in credentials file", region)
 }
 
-func validateRegionCredentials(regionCredentials *Region) error {
+func validateRegionCredentials(regionCredentials *RegionAccess) error {
 	var errs []error
 	if regionCredentials.ClientID == "" {
 		errs = append(errs, fmt.Errorf("client_id is empty"))
