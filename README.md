@@ -54,6 +54,27 @@ There are two end-to-end tests in the `service-test.go` file that demonstrate ho
 The tests do not use the service itself, but rather the clients directly. To run tests, you need to set the environment variables for the Service Binding credentials,
 and you need to comment out the `t.Skip()` lines in the tests. The tests will post a notification and an event using the clients, and they will check if the notification and event are delivered correctly.
 
+## ANS CLI
+
+The project includes a command-line interface (`ans-cli`) for sending notifications to the ANS service. The CLI provides a simple interface with only essential parameters and supports OAuth2 authentication.
+
+### Quick Start
+
+Build the CLI:
+```bash
+make build
+```
+
+Send a notification:
+```bash
+./bin/ans-cli notify user admin@example.com \
+  --region cf-eu12 \
+  --subject "Test Notification" \
+  --body "This is a test message"
+```
+
+For detailed usage instructions, see the [CLI documentation](docs/cli/README.md).
+
 ## Shell scripts
 The `ans-manager` module also contains shell scripts that can be used to post notifications, events, and to manage notification types, [see](./scripts/README.md) for details.
 
