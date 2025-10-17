@@ -9,16 +9,12 @@ import (
 	"github.com/kyma-project/ans-manager/events"
 	"github.com/kyma-project/ans-manager/internal/cli/client"
 	"github.com/kyma-project/ans-manager/internal/cli/credentials"
+	"github.com/kyma-project/ans-manager/internal/cli/factory"
 )
 
 const (
-	notificationTypeKey    = "KEB_ANS_PoC_Always_Visible"
-	iasHost                = "accounts.sap.com"
-	resourceType           = "application"
-	resourceName           = "ans-cli"
-	eventTypeUser          = "ans-cli-user-notification"
-	eventTypeSubaccount    = "ans-cli-subaccount-notification"
-	eventTypeGlobalaccount = "ans-cli-globalaccount-notification"
+	resourceType = "application"
+	resourceName = "ans-cli"
 )
 
 var (
@@ -89,53 +85,7 @@ func runNotifyCommand(recipientType string, recipients []string, debug bool) err
 
 	resource := events.NewResource(resourceType, resourceName, eventsClient.GetSubaccountID(), eventsClient.GetSubaccountID())
 
-	var eventType string
-	var visibility events.Visibility
-	var eventRecipients *events.Recipients
-	var userRecipients []events.UserRecipient
-	var xsuaaRecipients []events.XsuaaRecipient
-
-	switch recipientType {
-	case "user":
-		for _, email := range recipients {
-			userRecipient := events.NewUserRecipient(email, iasHost)
-			userRecipients = append(userRecipients, *userRecipient)
-		}
-		eventRecipients = events.NewRecipients(xsuaaRecipients, userRecipients)
-		eventType = eventTypeUser
-		visibility = events.VisibilityOwnerGlobalAccount
-	case "subaccount":
-		for _, uuid := range recipients {
-			xsuaaRecipient := events.NewXsuaaRecipient(events.LevelSubaccount, uuid, []events.RoleName{events.RoleSubaccountAdministrator})
-			xsuaaRecipients = append(xsuaaRecipients, *xsuaaRecipient)
-		}
-		eventRecipients = events.NewRecipients(xsuaaRecipients, userRecipients)
-		eventType = eventTypeSubaccount
-		visibility = events.VisibilityOwnerSubaccount
-	case "globalaccount":
-		for _, uuid := range recipients {
-			xsuaaRecipient := events.NewXsuaaRecipient(events.LevelGlobalAccount, uuid, []events.RoleName{events.RoleGlobalAccountAdministrator})
-			xsuaaRecipients = append(xsuaaRecipients, *xsuaaRecipient)
-		}
-		eventRecipients = events.NewRecipients(xsuaaRecipients, userRecipients)
-		eventType = eventTypeGlobalaccount
-		visibility = events.VisibilityOwnerGlobalAccount
-	default:
-		return fmt.Errorf("unsupported recipient type: %s", recipientType)
-	}
-
-	notificationMapping := events.NewNotificationMapping(notificationTypeKey, *eventRecipients)
-
-	resourceEvent, err := events.NewResourceEvent(
-		eventType,
-		body,
-		subject,
-		resource,
-		events.SeverityInfo,
-		events.CategoryNotification,
-		visibility,
-		*notificationMapping,
-	)
+	resourceEvent, err := newResourceEvent(recipientType, recipients, resource)
 	if err != nil {
 		return fmt.Errorf("failed to create resource event: %w", err)
 	}
@@ -193,4 +143,18 @@ func validateUUIDs(uuids []string) error {
 		}
 	}
 	return nil
+}
+
+func newResourceEvent(recipientType string, recipients []string, resource events.Resource) (*events.ResourceEvent, error) {
+	resourceEvent, err := factory.NewResourceEventByRecipients(recipientType, recipients)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create resource event: %w", err)
+	}
+	resourceEvent.Subject = subject
+	resourceEvent.Body = body
+	resourceEvent.Resource = resource
+	resourceEvent.Severity = events.SeverityInfo
+	resourceEvent.Category = events.CategoryNotification
+
+	return resourceEvent, nil
 }
